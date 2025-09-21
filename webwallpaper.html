@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Start Page — Wallpaper</title>
+  <style>
+    :root {
+      --accent: #7be495;
+      --accent-2: #4bb0ff;
+      --glass-bg: rgba(255, 255, 255, 0.06);
+      --glass-border: rgba(255, 255, 255, 0.10);
+      --text: rgba(255, 255, 255, 0.96);
+      --muted: rgba(255, 255, 255, 0.72);
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+      --radius: 14px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+      background: #05060a;
+    }
+
+    /* Background video (pure wallpaper) */
+    .bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 0;
+      filter: saturate(1.05) contrast(1.03);
+      pointer-events: none;
+      /* user can't interact with the video at all */
+      user-select: none;
+    }
+
+    /* Gradient overlay for readable UI */
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(6, 10, 19, 0.24) 0%, rgba(6, 10, 19, 0.48) 66%),
+        radial-gradient(800px 400px at 8% 18%, rgba(75, 176, 255, 0.06), transparent 12%),
+        radial-gradient(600px 300px at 92% 82%, rgba(123, 228, 149, 0.05), transparent 12%);
+      z-index: 1;
+    }
+
+    /* Center content container */
+    .center {
+      position: relative;
+      z-index: 2;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      box-sizing: border-box;
+    }
+
+    /* Glass card */
+    .card {
+      width: min(960px, 94vw);
+      max-width: 1100px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px) saturate(1.1);
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 22px;
+      padding: 26px;
+      align-items: center;
+    }
+
+    .brand {
+      padding: 6px 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(20px, 3.8vw, 34px);
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .brand p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--text);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      transition: transform .16s cubic-bezier(.2, .9, .3, 1), box-shadow .16s, background .16s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    }
+
+    .link:focus,
+    .link:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+      outline: none;
+    }
+
+    .link .icon {
+      min-width: 44px;
+      min-height: 44px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+      color: var(--accent);
+      font-size: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .link .meta {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .link .title {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .link .desc {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .card-footer {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.02);
+    }
+
+    .hints {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width:880px) {
+      .card {
+        grid-template-columns: 1fr;
+        padding: 18px;
+        gap: 16px;
+      }
+
+      .links {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .link {
+        min-width: 45%;
+        max-width: 46%;
+      }
+
+      .card-footer {
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+      }
+    }
+
+    a:focus {
+      outline: 3px solid rgba(123, 228, 149, 0.18);
+      outline-offset: 3px;
+      border-radius: 10px;
+    }
+
+    .top-right {
+      position: fixed;
+      right: 18px;
+      top: 18px;
+      z-index: 3;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .quick-mini {
+      background: var(--glass-bg);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 8px 10px;
+      border-radius: 10px;
+      backdrop-filter: blur(6px);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Video background (pure wallpaper) -->
+  <video class="bg-video" autoplay muted loop playsinline preload="auto" poster="" aria-hidden="true" tabindex="-1">
+    <source src="wallpaper.mp4" type="video/mp4">
+    <!-- fallback --> Your browser doesn't support HTML5 video. Make sure "wallpaper.mp4" is in the same folder.
+  </video>
+  <!-- Decorative overlay -->
+  <div class="bg-overlay" aria-hidden="true">
+  </div>
+  <!-- Top utilities (non-video controls) -->
+  <div class="top-right" aria-hidden="false">
+    <div class="quick-mini" title="Current theme">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        </path>
+      </svg>
+      <span>Minimal</span>
+    </div>
+  </div>
+  <!-- Main centered UI -->
+  <main class="center" role="main">
+    <section class="card" aria-labelledby="start-title">
+      <div class="brand" id="start-title">
+        <h1>Start — quick links</h1>
+        <p>Press numbers 1–4 to open links. Links open in a new tab.</p>
+      </div>
+      <nav class="links" aria-label="Quick links">
+        <!-- LINK #1: opens multiple sites (click or press 1) -->
+        <a id="multiLink1" class="link" href="https://example.com" target="_blank" rel="noopener noreferrer" data-key="1" title="Open multiple sites">
+          <div class="icon">1</div>
+          <div class="meta">
+            <div class="title">Open My Daily Sites</div>
+            <div class="desc">Opens several sites in new tabs (click or press 1)</div>
+          </div>
+        </a>
+        <!-- other links stay normal -->
+        <a class="link" href="https://example.org" target="_blank" rel="noopener noreferrer" data-key="2" title="Open Example 2">
+          <div class="icon">2</div>
+          <div class="meta">
+            <div class="title">Example Link Two</div>
+            <div class="desc">Another placeholder</div>
+          </div>
+        </a>
+        <a class="link" href="https://news.ycombinator.com" target="_blank" rel="noopener noreferrer" data-key="3" title="Open Example 3">
+          <div class="icon">3</div>
+          <div class="meta">
+            <div class="title">Example Link Three</div>
+            <div class="desc">Tech / news</div>
+          </div>
+        </a>
+        <a class="link" href="https://github.com" target="_blank" rel="noopener noreferrer" data-key="4" title="Open Example 4">
+          <div class="icon">4</div>
+          <div class="meta">
+            <div class="title">Example Link Four</div>
+            <div class="desc">Code & projects</div>
+          </div>
+        </a>
+      </nav>
+      <div class="card-footer" aria-hidden="false">
+        <div class="hints">Tip: Press <strong>1</strong>–<strong>4</strong> or click a card. Make sure <code>wallpaper.mp4</code> is in the same folder.</div>
+        <div class="hints" style="opacity:0.88;font-size:12px;">Link #1 opens multiple websites (uses a hub tab to reduce popup blocking).</div>
+      </div>
+    </section>
+  </main>
+  <script>
+    (function() {
+      const links = Array.from(document.querySelectorAll('.link'));
+      const multiLink = document.getElementById('multiLink1');
+      // Set the list of URLs you want link #1 to open.
+      // Edit these to your desired sites.
+      const MULTI_URLS = ['https://example.com', 'https://example.org', 'https://github.com'];
+      // Handler that opens multiple URLs using a hub window (most reliable).
+      function openMultipleUrls(urls) {
+        // Open a single hub tab/window first (user gesture), then instruct it to open the rest.
+        const hub = window.open('', '_blank', 'noopener');
+        if (hub) {
+          // Write a small page to the hub which opens the urls (each in its own tab) then closes itself.
+          const html = `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Opening...</title>
+</head>
+<body>
+<p>Opening sites... If popups are blocked, allow popups for this site.</p>
+<script>
+(function(){
+const urls = ${JSON.stringify(urls)};
+for (const u of urls) {
+try {
+window.open(u, '_blank', 'noopener,noreferrer');
+} catch(e) { /* ignore */ }
+}
+// Close the hub after a short delay (gives the opens time to start)
+setTimeout(function(){ try { window.close(); } catch(e) {} }, 500);
+})();
+<\/script>
+</body>
+</html>`;
+          hub.document.write(html);
+          hub.document.close();
+        } else {
+          // If we couldn't open the hub (very rare), fall back to anchor-click method.
+          for (const u of urls) {
+            const a = document.createElement('a');
+            a.href = u;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }
+        }
+      }
+      // Click handler for link #1
+      if (multiLink) {
+        multiLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          openMultipleUrls(MULTI_URLS);
+        });
+        // Keyboard activation for focused link
+        multiLink.addEventListener('keydown', (ev) => {
+          if (ev.key === 'Enter' || ev.key === ' ') {
+            ev.preventDefault();
+            openMultipleUrls(MULTI_URLS);
+          }
+        });
+      }
+      // Open link on 1..4 key press (pressing 1 triggers MULTI_URLS)
+      window.addEventListener('keydown', (e) => {
+        if (e.key === '1') {
+          e.preventDefault();
+          openMultipleUrls(MULTI_URLS);
+        } else if (e.key >= '2' && e.key <= '4') {
+          const idx = Number(e.key) - 1;
+          const a = links[idx];
+          if (a) window.open(a.href, '_blank', 'noopener');
+        }
+      });
+      // Prevent accidental drag/select on video (extra safety)
+      const vid = document.querySelector('.bg-video');
+      if (vid) {
+        vid.addEventListener('contextmenu', (e) => e.preventDefault());
+        vid.addEventListener('dragstart', (e) => e.preventDefault());
+      }
+    })();
+  </script>
+</body>
+
+</html>
